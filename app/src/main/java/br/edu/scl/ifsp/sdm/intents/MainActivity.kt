@@ -34,6 +34,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == PARAMETER_REQUEST_CODE && resultCode == RESULT_OK) {
+            data?.getStringExtra(PARAMETER_EXTRA)?.also {
+                activityMainBinding.parameterTv.text = it
+            }
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return true

@@ -1,12 +1,17 @@
 package br.edu.scl.ifsp.sdm.intents
 
+import android.Manifest.permission.CALL_PHONE
 import android.content.Intent
+import android.content.Intent.ACTION_CALL
 import android.content.Intent.ACTION_VIEW
+import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import br.edu.scl.ifsp.sdm.intents.Extras.PARAMETER_EXTRA
@@ -37,6 +42,18 @@ class MainActivity : AppCompatActivity() {
                     result.data?.getStringExtra(PARAMETER_EXTRA)?.also {
                         activityMainBinding.parameterTv.text = it
                     }
+                }
+            }
+
+        callPhonePermissionArl =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { permissionGranted ->
+                if (permissionGranted) {
+                    callPhone(call = true)
+                } else {
+                    Toast.makeText(
+                        this,
+                        getString(R.string.permission_required_to_call), Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
 
@@ -72,6 +89,15 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.callMi -> {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (checkSelfPermission(CALL_PHONE) == PERMISSION_GRANTED) {
+                        callPhone(call = true)
+                    } else {
+                        callPhonePermissionArl.launch(CALL_PHONE)
+                    }
+                } else {
+                    callPhone(call = true)
+                }
                 true
             }
 
@@ -92,6 +118,17 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun callPhone(call: Boolean) {
+        startActivity(
+            Intent(if (call) ACTION_CALL else ACTION_DIAL).apply {
+                "tel: ${activityMainBinding.parameterTv.text}".also {
+                    data = Uri.parse(it)
+                }
+            }
+        )
+    }
+
     private fun browserIntent(): Intent {
         val url = Uri.parse(activityMainBinding.parameterTv.text.toString())
         return Intent(ACTION_VIEW, url)

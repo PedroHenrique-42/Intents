@@ -7,6 +7,8 @@ import android.content.Intent.ACTION_CHOOSER
 import android.content.Intent.ACTION_DIAL
 import android.content.Intent.ACTION_PICK
 import android.content.Intent.ACTION_VIEW
+import android.content.Intent.EXTRA_INTENT
+import android.content.Intent.EXTRA_TITLE
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
@@ -135,6 +137,12 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.chooserMi -> {
+                startActivity(
+                    Intent(ACTION_CHOOSER).apply {
+                        putExtra(EXTRA_TITLE, getString(R.string.choose_your_favorite_browser))
+                        putExtra(EXTRA_INTENT, browserIntent())
+                    }
+                )
                 true
             }
 

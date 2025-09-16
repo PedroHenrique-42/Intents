@@ -1,6 +1,8 @@
 package br.edu.scl.ifsp.sdm.intents
 
 import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -20,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private lateinit var parameterArl: ActivityResultLauncher<Intent>
+    private lateinit var callPhonePermissionArl: ActivityResultLauncher<String>
+    private lateinit var pickImageArl: ActivityResultLauncher<Intent>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +67,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.viewMi -> {
+                startActivity(browserIntent())
                 true
             }
 
@@ -86,5 +91,9 @@ class MainActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+    private fun browserIntent(): Intent {
+        val url = Uri.parse(activityMainBinding.parameterTv.text.toString())
+        return Intent(ACTION_VIEW, url)
     }
 }

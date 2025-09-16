@@ -3,13 +3,16 @@ package br.edu.scl.ifsp.sdm.intents
 import android.Manifest.permission.CALL_PHONE
 import android.content.Intent
 import android.content.Intent.ACTION_CALL
+import android.content.Intent.ACTION_CHOOSER
 import android.content.Intent.ACTION_DIAL
+import android.content.Intent.ACTION_PICK
 import android.content.Intent.ACTION_VIEW
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import android.net.Uri
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -55,6 +58,18 @@ class MainActivity : AppCompatActivity() {
                         this,
                         getString(R.string.permission_required_to_call), Toast.LENGTH_SHORT
                     ).show()
+                }
+            }
+
+        pickImageArl =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                with(result) {
+                    if (resultCode == RESULT_OK) {
+                        data?.data?.also {
+                            activityMainBinding.parameterTv.text = it.toString()
+                            startActivity(Intent(ACTION_VIEW).apply { data = it })
+                        }
+                    }
                 }
             }
 
@@ -108,6 +123,14 @@ class MainActivity : AppCompatActivity() {
             }
 
             R.id.pickMi -> {
+                val imageDir =
+                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).path
+                pickImageArl.launch(Intent(ACTION_PICK).apply {
+                    setDataAndType(
+                        Uri.parse(imageDir),
+                        "image/*"
+                    )
+                })
                 true
             }
 
